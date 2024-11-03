@@ -25,7 +25,7 @@ jobs:
         trivy image --output trivy-report.json --severity HIGH,CRITICAL my-portfolio-image:latest  # Scan the image
 
     - name: Upload Trivy report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3  # Updated to v3
       with:
         name: trivy-report
         path: trivy-report.json  # Path to the generated report
