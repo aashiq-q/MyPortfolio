@@ -16,6 +16,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'  # Adjust based on your project requirements
+          distribution: 'adopt'  # Required distribution parameter
+
       - name: Run SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
