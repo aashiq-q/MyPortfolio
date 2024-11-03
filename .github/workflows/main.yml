@@ -1,0 +1,54 @@
+name: CI/CD Pipeline with SonarQube and Docker
+
+on:
+  push:
+    branches:
+      - main   # Trigger on pushes to the main branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarQubeAnalysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'  # Adjust based on your project requirements
+
+      - name: Run SonarQube analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=my_project_key \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  buildAndDeploy:
+    runs-on: ubuntu-latest
+    needs: sonarQubeAnalysis  # Only run if SonarQube analysis is successful
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t my-portfolio-image:latest .
+
+      - name: Run Docker container on localhost
+        run: |
+          docker run -d -p 8080:80 --name my-portfolio-container my-portfolio-image:latest
+
+      - name: Check container status
+        run: docker ps -a | grep my-portfolio-container
