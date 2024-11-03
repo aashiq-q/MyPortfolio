@@ -42,7 +42,7 @@ jobs:
 
     - name: Run Docker container
       run: |
-        docker run -d -p 8080:80 my-portfolio-image:latest  # Replace ports as needed
+        docker run -d -p 8082:80 my-portfolio-image:latest  # Replace ports as needed
 
     - name: Post successful build message
-      run: echo "Docker image built and running on localhost:8080"
+      run: echo "Docker image built and running on localhost:8082"
